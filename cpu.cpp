@@ -348,6 +348,55 @@ public:
     }
   }
 
+  void OP_FX15() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+    delayTimer = registers[Vx];
+  }
+
+  void OP_FX18() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    index = index + registers[Vx];
+  }
+
+  // ??
+  void OP_FX1E() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t digit = registers[Vx];
+
+    index = FONTSET_START_ADDRESS + (5 * digit);
+  }
+
+  void OP_FX33() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t value = registers[Vx];
+
+    // Ones
+    memory[index + 2] = value % 10;
+    value /= 10;
+
+    // Tens
+    memory[index + 1] = value % 10;
+    value /= 10;
+
+    // Hundreds
+    memory[index] = value % 10;
+  }
+
+  void OP_FX55() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    for (uint8_t i = 0; i <= Vx; i++) {
+      memory[index + i] = registers[i];
+    }
+  }
+
+  void OP_FX65() {
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    for (uint8_t i = 0; i <= Vx; i++) {
+      registers[i] = memory[index + i];
+    }
+  }
+
   void LoadRom(char const *filename) {
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
 
